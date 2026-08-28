@@ -78,7 +78,7 @@ export default function Dashboard() {
   const recentProposals = proposals.slice(0, 4)
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-[1200px]">
+    <div className="w-full max-w-[1200px] min-w-0 space-y-6 animate-fade-in">
       {/* Page header */}
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -134,7 +134,7 @@ export default function Dashboard() {
                 </select>
               }
             />
-            <div className="px-5 pb-5">
+            <div className="px-3 pb-4 sm:px-5 sm:pb-5">
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={revenueData} barSize={14} barGap={4}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E2D9C8" vertical={false} />
@@ -195,7 +195,7 @@ export default function Dashboard() {
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="table-base w-full table-fixed">
+          <table className="table-base w-full min-w-[620px] table-fixed">
             <thead>
               <tr>
                 <th>Project</th>

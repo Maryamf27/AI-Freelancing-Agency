@@ -134,32 +134,32 @@ export default function Landing() {
               </div>
             </div>
             {/* Mockup content */}
-            <div className="p-6 bg-cream-100 grid grid-cols-4 gap-4">
+            <div className="p-3 sm:p-6 bg-cream-100 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
               {[
                 { label: 'Revenue MTD', value: '$14,600' },
                 { label: 'Active Proposals', value: '5' },
                 { label: 'Pending Sign-off', value: '2' },
                 { label: 'Scope Alerts', value: '4' },
               ].map((kpi) => (
-                <div key={kpi.label} className="bg-white rounded-xl p-4 border border-cream-300">
-                  <p className="text-[10px] text-charcoal-400 uppercase tracking-wide mb-1">{kpi.label}</p>
-                  <p className="text-xl font-display text-charcoal-800">{kpi.value}</p>
+                <div key={kpi.label} className="bg-white rounded-xl p-2.5 sm:p-4 border border-cream-300 min-w-0">
+                  <p className="text-[9px] sm:text-[10px] text-charcoal-400 uppercase tracking-wide mb-1 break-words">{kpi.label}</p>
+                  <p className="text-lg sm:text-xl font-display text-charcoal-800">{kpi.value}</p>
                 </div>
               ))}
-              <div className="col-span-3 bg-white rounded-xl p-4 border border-cream-300 h-28 flex items-center justify-center">
-                <div className="flex items-end gap-2 h-16">
+              <div className="col-span-2 sm:col-span-3 bg-white rounded-xl p-2.5 sm:p-4 border border-cream-300 h-24 sm:h-28 flex items-center justify-center min-w-0">
+                <div className="flex items-end gap-1.5 sm:gap-2 h-14 sm:h-16">
                   {[40, 65, 50, 80, 60, 95].map((h, i) => (
                     <div
                       key={i}
-                      className="w-6 rounded-t bg-sage-200"
+                      className="w-4 sm:w-6 rounded-t bg-sage-200"
                       style={{ height: `${h}%` }}
                     />
                   ))}
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-4 border border-cream-300 h-28 space-y-2">
+              <div className="bg-white rounded-xl p-2.5 sm:p-4 border border-cream-300 h-24 sm:h-28 space-y-2 min-w-0">
                 {['Signed ✓', 'Scope Alert ⚠', 'Invoice Paid'].map((item) => (
-                  <div key={item} className="h-5 bg-cream-200 rounded text-[9px] flex items-center px-2 text-charcoal-500">
+                  <div key={item} className="h-5 bg-cream-200 rounded text-[9px] flex items-center px-1.5 sm:px-2 text-charcoal-500 truncate">
                     {item}
                   </div>
                 ))}
