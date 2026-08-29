@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
 import { AppDataProvider } from './context/AppDataContext'
 import Landing from './pages/Landing'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import ProposalBuilder from './pages/ProposalBuilder'
 import ProposalsList from './pages/ProposalsList'
@@ -19,6 +21,8 @@ export default function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/client/:token" element={<ClientPortal />} />
 
           {/* App routes with sidebar layout */}

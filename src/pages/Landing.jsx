@@ -73,13 +73,13 @@ export default function Landing() {
           </nav>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/login')}
               className="text-sm text-charcoal-600 hover:text-charcoal-900 transition-colors font-medium"
             >
               Sign in
             </button>
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/signup')}
               className="btn-primary btn btn-sm"
             >
               Get started
@@ -107,7 +107,7 @@ export default function Landing() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-16">
           <button
-            onClick={() => navigate('/proposals/new')}
+            onClick={() => navigate('/signup')}
             className="btn btn-primary btn-lg group"
           >
             Build your first proposal
@@ -261,7 +261,7 @@ export default function Landing() {
                 ))}
               </ul>
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/signup')}
                 className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] ${
                   plan.highlight
                     ? 'bg-sage-600 text-white hover:bg-sage-700'
@@ -281,7 +281,7 @@ export default function Landing() {
           <h2 className="font-display text-4xl text-white mb-4">Ready to close more clients?</h2>
           <p className="text-sage-200 text-sm mb-8">Join 2,400+ freelancers and agencies sending better proposals.</p>
           <button
-            onClick={() => navigate('/proposals/new')}
+            onClick={() => navigate('/signup')}
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-sage-800 rounded-xl text-sm font-semibold hover:bg-cream-100 transition-all active:scale-[0.98] shadow-card-md"
           >
             Build your first proposal free

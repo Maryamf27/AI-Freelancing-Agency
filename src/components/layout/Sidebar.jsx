@@ -102,7 +102,7 @@ export default function Sidebar({ open, onClose }) {
           Settings
         </button>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/login')}
           className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:bg-cream-200 hover:text-charcoal-800 transition-all"
         >
           <LogOut size={16} />

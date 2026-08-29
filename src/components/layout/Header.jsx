@@ -155,7 +155,7 @@ export default function Header({ onMenuClick }) {
                 <Settings size={14} /> Settings
               </button>
               <button
-                onClick={() => { setProfileOpen(false); navigate('/') }}
+                onClick={() => { setProfileOpen(false); navigate('/login') }}
                 className="flex items-center gap-2.5 w-full px-4 py-2 text-sm text-charcoal-600 hover:bg-cream-100 hover:text-charcoal-800 transition-colors"
               >
                 <LogOut size={14} /> Sign out
