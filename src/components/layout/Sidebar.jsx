@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
   FileText,
@@ -9,6 +9,7 @@ import {
   Sparkles,
   ChevronDown,
 } from 'lucide-react'
+import { useAppData } from '../../context/AppDataContext'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -18,6 +19,9 @@ const navItems = [
 
 export default function Sidebar({ open, onClose }) {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { profile } = useAppData()
+  const settingsActive = location.pathname.startsWith('/settings')
 
   return (
     <>
@@ -39,12 +43,15 @@ export default function Sidebar({ open, onClose }) {
 
       {/* Workspace switcher */}
       <div className="px-3 pt-4 pb-2">
-        <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-cream-200 hover:bg-cream-300 transition-colors group">
+        <button
+          onClick={() => { navigate('/settings'); onClose?.() }}
+          className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-cream-200 hover:bg-cream-300 transition-colors group"
+        >
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-5 h-5 rounded bg-amber-300 flex-shrink-0 flex items-center justify-center">
-              <span className="text-[9px] font-bold text-amber-900">JK</span>
+              <span className="text-[9px] font-bold text-amber-900">{profile.avatarInitials}</span>
             </div>
-            <span className="text-sm text-charcoal-700 truncate">James Keller</span>
+            <span className="text-sm text-charcoal-700 truncate">{profile.name}</span>
           </div>
           <ChevronDown size={13} className="text-charcoal-500 flex-shrink-0" />
         </button>
@@ -85,7 +92,12 @@ export default function Sidebar({ open, onClose }) {
 
       {/* Bottom user area */}
       <div className="px-3 py-4 border-t border-cream-300 space-y-0.5">
-        <button className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-charcoal-500 hover:bg-cream-200 hover:text-charcoal-800 transition-all">
+        <button
+          onClick={() => { navigate('/settings'); onClose?.() }}
+          className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition-all ${
+            settingsActive ? 'bg-sage-100 text-sage-800' : 'text-charcoal-500 hover:bg-cream-200 hover:text-charcoal-800'
+          }`}
+        >
           <Settings size={16} />
           Settings
         </button>

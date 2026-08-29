@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Send, ExternalLink, AlertTriangle, Check, MessageSquare, ChevronDown } from 'lucide-react'
 import { Badge } from '../components/ui/Badge'
@@ -15,6 +16,18 @@ export default function ProposalDetail() {
   const proposal = proposals.find((p) => p.id === id) || proposals[1]
   const logs = chatLogs.filter((c) => c.proposalId === proposal.id)
   const flaggedCount = logs.filter((c) => c.flagged).length
+  const [reminderSent, setReminderSent] = useState(false)
+  const [changeOrderRequested, setChangeOrderRequested] = useState(false)
+
+  const handleSendReminder = () => {
+    setReminderSent(true)
+    setTimeout(() => setReminderSent(false), 2500)
+  }
+
+  const handleGenerateChangeOrder = () => {
+    setChangeOrderRequested(true)
+    setTimeout(() => navigate('/invoices/new'), 900)
+  }
 
   return (
     <div className="max-w-[1100px] animate-fade-in space-y-5">
@@ -45,8 +58,12 @@ export default function ProposalDetail() {
           >
             <ExternalLink size={14} /> Client view
           </button>
-          <button className="btn btn-sage gap-2 justify-center">
-            <Send size={14} /> Send reminder
+          <button
+            onClick={handleSendReminder}
+            className={`btn gap-2 justify-center ${reminderSent ? 'btn-outline' : 'btn-sage'}`}
+          >
+            {reminderSent ? <Check size={14} /> : <Send size={14} />}
+            {reminderSent ? 'Reminder sent' : 'Send reminder'}
           </button>
         </div>
       </div>
@@ -161,8 +178,11 @@ export default function ProposalDetail() {
             </div>
             <p className="text-xs text-charcoal-400">{flaggedCount} flagged messages · {proposal.scopeScore > 30 ? 'High risk — send a change order' : proposal.scopeScore > 15 ? 'Moderate — monitor closely' : 'Low risk'}</p>
             {proposal.scopeScore > 15 && (
-              <button className="mt-3 w-full py-2 rounded-lg bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition-colors">
-                Generate change order →
+              <button
+                onClick={handleGenerateChangeOrder}
+                className="mt-3 w-full py-2 rounded-lg bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition-colors"
+              >
+                {changeOrderRequested ? 'Opening invoice draft…' : 'Generate change order →'}
               </button>
             )}
           </Card>

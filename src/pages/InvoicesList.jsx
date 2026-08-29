@@ -3,23 +3,38 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Download, Filter } from 'lucide-react'
 import Card from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
-import { invoices } from '../data/mockData'
+import { useAppData } from '../context/AppDataContext'
 
 const FILTERS = ['All', 'Paid', 'Unpaid', 'Overdue']
 
-const totalByStatus = {
-  paid: invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0),
-  unpaid: invoices.filter(i => i.status === 'unpaid').reduce((s, i) => s + i.amount, 0),
-  overdue: invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.amount, 0),
-}
-
 export default function InvoicesList() {
   const navigate = useNavigate()
+  const { invoices, markInvoicePaid } = useAppData()
   const [activeFilter, setActiveFilter] = useState('All')
+
+  const totalByStatus = {
+    paid: invoices.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0),
+    unpaid: invoices.filter(i => i.status === 'unpaid').reduce((s, i) => s + i.amount, 0),
+    overdue: invoices.filter(i => i.status === 'overdue').reduce((s, i) => s + i.amount, 0),
+  }
 
   const filtered = activeFilter === 'All'
     ? invoices
     : invoices.filter(i => i.status === activeFilter.toLowerCase())
+
+  const handleExport = () => {
+    const header = 'Invoice,Project,Client,Type,Amount,Status,Due Date\n'
+    const rows = filtered
+      .map((i) => [i.id, i.proposal, i.client, i.type, i.amount, i.status, i.due].join(','))
+      .join('\n')
+    const blob = new Blob([header + rows], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'invoices.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="space-y-5 animate-fade-in max-w-[1000px] w-full">
@@ -29,7 +44,10 @@ export default function InvoicesList() {
           <h1 className="font-display text-2xl text-charcoal-800">Invoices</h1>
           <p className="text-sm text-charcoal-400 mt-0.5">{invoices.length} invoices · ${invoices.reduce((s,i) => s + i.amount, 0).toLocaleString()} total</p>
         </div>
-        <button className="btn btn-primary gap-2 w-full sm:w-auto">
+        <button
+          onClick={() => navigate('/invoices/new')}
+          className="btn btn-primary gap-2 w-full sm:w-auto"
+        >
           <Plus size={15} />
           New invoice
         </button>
@@ -56,7 +74,7 @@ export default function InvoicesList() {
             <button
               key={f}
               onClick={() => setActiveFilter(f)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
                 activeFilter === f ? 'bg-white text-charcoal-800 shadow-sm' : 'text-charcoal-500 hover:text-charcoal-700'
               }`}
             >
@@ -64,13 +82,21 @@ export default function InvoicesList() {
             </button>
           ))}
         </div>
-        <button className="btn btn-outline btn-sm gap-1.5 self-start sm:self-auto">
+        <button onClick={handleExport} className="btn btn-outline btn-sm gap-1.5 self-start sm:self-auto">
           <Download size={12} /> Export CSV
         </button>
       </div>
 
       {/* Table */}
       <Card padding={false}>
+        {filtered.length === 0 ? (
+          <div className="py-16 text-center">
+            <div className="w-12 h-12 rounded-full bg-cream-200 flex items-center justify-center mx-auto mb-3">
+              <Filter size={20} className="text-charcoal-400" />
+            </div>
+            <p className="text-charcoal-500 text-sm">No invoices match your filters.</p>
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="table-base">
             <thead>
@@ -87,7 +113,11 @@ export default function InvoicesList() {
             </thead>
             <tbody>
               {filtered.map((inv) => (
-                <tr key={inv.id} className="cursor-pointer group">
+                <tr
+                  key={inv.id}
+                  className="cursor-pointer group"
+                  onClick={() => navigate(`/invoices/${inv.id}`)}
+                >
                   <td>
                     <span className="font-mono text-xs font-medium text-charcoal-700">{inv.id}</span>
                   </td>
@@ -118,11 +148,21 @@ export default function InvoicesList() {
                       )}
                     </div>
                   </td>
-                  <td>
+                  <td onClick={(e) => e.stopPropagation()}>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="btn btn-outline btn-sm">View</button>
+                      <button
+                        onClick={() => navigate(`/invoices/${inv.id}`)}
+                        className="btn btn-outline btn-sm"
+                      >
+                        View
+                      </button>
                       {inv.status !== 'paid' && (
-                        <button className="btn btn-sage btn-sm">Mark paid</button>
+                        <button
+                          onClick={() => markInvoicePaid(inv.id)}
+                          className="btn btn-sage btn-sm"
+                        >
+                          Mark paid
+                        </button>
                       )}
                     </div>
                   </td>
@@ -131,9 +171,10 @@ export default function InvoicesList() {
             </tbody>
           </table>
         </div>
+        )}
 
         {/* Footer total */}
-        <div className="px-4 py-3 border-t border-cream-200 flex items-center justify-between">
+        <div className="px-4 py-3 border-t border-cream-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
           <p className="text-xs text-charcoal-400">Showing {filtered.length} of {invoices.length} invoices</p>
           <div className="text-sm font-semibold text-charcoal-700">
             Total: ${filtered.reduce((s, i) => s + i.amount, 0).toLocaleString()}

@@ -1,19 +1,49 @@
-import { useLocation } from 'react-router-dom'
-import { Bell, Menu, Search } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Bell, Menu, Search, Settings, LogOut, CheckCircle, AlertTriangle, Eye, DollarSign, Send } from 'lucide-react'
+import { useAppData } from '../../context/AppDataContext'
+import { activityFeed } from '../../data/mockData'
 
 const breadcrumbMap = {
   '/dashboard': ['Dashboard'],
   '/proposals': ['Proposals'],
   '/proposals/new': ['Proposals', 'New Proposal'],
   '/invoices': ['Invoices'],
+  '/invoices/new': ['Invoices', 'New Invoice'],
+  '/settings': ['Settings'],
+}
+
+const activityIcons = {
+  check: CheckCircle,
+  alert: AlertTriangle,
+  eye: Eye,
+  dollar: DollarSign,
+  send: Send,
 }
 
 export default function Header({ onMenuClick }) {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { profile } = useAppData()
+  const [notifOpen, setNotifOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const notifRef = useRef(null)
+  const profileRef = useRef(null)
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false)
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
   const crumbs = breadcrumbMap[location.pathname] || ['PropFlow']
 
-  // For /proposals/:id
+  // For /proposals/:id and /invoices/:id
   const isProposalDetail = location.pathname.startsWith('/proposals/') && location.pathname !== '/proposals/new'
+  const isInvoiceDetail = location.pathname.startsWith('/invoices/') && location.pathname !== '/invoices/new'
 
   return (
     <header className="h-[60px] flex items-center justify-between gap-3 px-4 sm:px-6 bg-cream-50 border-b border-cream-300 flex-shrink-0">
@@ -30,6 +60,12 @@ export default function Header({ onMenuClick }) {
         {isProposalDetail ? (
           <>
             <span className="text-charcoal-400">Proposals</span>
+            <span className="text-charcoal-300">/</span>
+            <span className="text-charcoal-700 font-medium">Detail</span>
+          </>
+        ) : isInvoiceDetail ? (
+          <>
+            <span className="text-charcoal-400">Invoices</span>
             <span className="text-charcoal-300">/</span>
             <span className="text-charcoal-700 font-medium">Detail</span>
           </>
@@ -59,14 +95,73 @@ export default function Header({ onMenuClick }) {
         </div>
 
         {/* Notifications */}
-        <button className="relative p-1.5 rounded-lg hover:bg-cream-200 transition-colors">
-          <Bell size={17} className="text-charcoal-500" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400 scope-alert-dot" />
-        </button>
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setNotifOpen((v) => !v)}
+            className="relative p-1.5 rounded-lg hover:bg-cream-200 transition-colors"
+          >
+            <Bell size={17} className="text-charcoal-500" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400 scope-alert-dot" />
+          </button>
+          {notifOpen && (
+            <div className="absolute right-0 top-11 w-80 max-w-[calc(100vw-2rem)] bg-white border border-cream-300 rounded-xl shadow-card-lg z-20 animate-slide-up overflow-hidden">
+              <div className="px-4 py-3 border-b border-cream-200">
+                <p className="text-sm font-semibold text-charcoal-800">Notifications</p>
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {activityFeed.map((item) => {
+                  const Icon = activityIcons[item.icon]
+                  return (
+                    <div key={item.id} className="flex items-start gap-3 px-4 py-3 border-b border-cream-100 last:border-0 hover:bg-cream-50 transition-colors">
+                      <div className="w-7 h-7 rounded-full bg-cream-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Icon size={13} className="text-charcoal-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-charcoal-700 leading-snug">{item.message}</p>
+                        <p className="text-[10px] text-charcoal-400 mt-0.5">{item.time}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <button
+                onClick={() => { setNotifOpen(false); navigate('/dashboard') }}
+                className="w-full px-4 py-2.5 text-xs text-sage-600 font-medium hover:bg-cream-50 transition-colors"
+              >
+                View all activity
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-sage-200 flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-sage-400 transition-all">
-          <span className="text-xs font-semibold text-sage-800">JK</span>
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setProfileOpen((v) => !v)}
+            className="w-8 h-8 rounded-full bg-sage-200 flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-sage-400 transition-all"
+          >
+            <span className="text-xs font-semibold text-sage-800">{profile.avatarInitials}</span>
+          </button>
+          {profileOpen && (
+            <div className="absolute right-0 top-11 w-52 bg-white border border-cream-300 rounded-xl shadow-card-lg z-20 animate-slide-up overflow-hidden py-1">
+              <div className="px-4 py-2.5 border-b border-cream-200">
+                <p className="text-sm font-medium text-charcoal-800 truncate">{profile.name}</p>
+                <p className="text-xs text-charcoal-400 truncate">{profile.email}</p>
+              </div>
+              <button
+                onClick={() => { setProfileOpen(false); navigate('/settings') }}
+                className="flex items-center gap-2.5 w-full px-4 py-2 text-sm text-charcoal-600 hover:bg-cream-100 hover:text-charcoal-800 transition-colors"
+              >
+                <Settings size={14} /> Settings
+              </button>
+              <button
+                onClick={() => { setProfileOpen(false); navigate('/') }}
+                className="flex items-center gap-2.5 w-full px-4 py-2 text-sm text-charcoal-600 hover:bg-cream-100 hover:text-charcoal-800 transition-colors"
+              >
+                <LogOut size={14} /> Sign out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
